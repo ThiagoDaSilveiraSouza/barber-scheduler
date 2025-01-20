@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -10,7 +10,7 @@ export const Sidebar = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-all duration-300 ${
+      className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-all duration-300 z-50 ${
         isOpen ? "w-64" : "w-16"
       }`}
     >
@@ -43,12 +43,12 @@ export const Sidebar = () => {
           Home
         </Link>
         <Link
-          to="/about"
+          to="/barbeiros"
           className={`text-white hover:bg-gray-700 py-2 px-4 rounded-md transition-all duration-300 ${
             isOpen ? "block" : "hidden"
           }`}
         >
-          About
+          Barbeiros
         </Link>
       </div>
 

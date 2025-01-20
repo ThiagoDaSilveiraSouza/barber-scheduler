@@ -1,6 +1,6 @@
 import { AuthModal } from "../../components";
 
-export const LoadingPage = () => {
+export const AuthPage = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-white">
       <AuthModal />
