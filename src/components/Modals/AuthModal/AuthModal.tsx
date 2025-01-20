@@ -2,22 +2,47 @@ import { MainModal } from "../../MainModal";
 import { useModals } from "../../../store/useModals";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { schema } from "./schema";
+import { authSchema } from "../../../schemas/authSchema";
 import { z } from "zod";
+import { AuthService } from "../../../services";
+import { useCallback, useEffect, useState } from "react";
+import { useAuthStore } from "../../../store";
 
 export const AuthModal = () => {
   const { modalsStates, closeModal } = useModals();
+  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, setIsAuthenticated, initializeAuth } =
+    useAuthStore();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema), // Passando o esquema Zod para o React Hook Form
+  } = useForm<z.infer<typeof authSchema>>({
+    resolver: zodResolver(authSchema), // Passando o esquema Zod para o React Hook Form
   });
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    console.log("Dados enviados:", data);
+  const onSubmit = async (data: z.infer<typeof authSchema>) => {
+    setIsLoading(true);
+    const response = await AuthService(data);
+    if (response.success) {
+      closeModal("authModal");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      setIsAuthenticated(response.data.userData);
+    } else {
+      console.log("Erro:", response.message);
+    }
+    setIsLoading(false);
   };
+
+  const handlerAuthenticated = useCallback(async () => {
+    setIsLoading(true);
+    await initializeAuth();
+    setIsLoading(false);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    handlerAuthenticated();
+  }, [handlerAuthenticated]);
 
   return (
     <MainModal
@@ -72,9 +97,19 @@ export const AuthModal = () => {
 
           <button
             type="submit"
-            className="w-full py-2 px-4 mt-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
+            className={`w-full py-2 px-4 mt-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
-            Entrar
+            {isLoading ? (
+              <>
+                Carregando...
+                {/* <span className="loading loading-spinner loading-lg text-blue-500"></span> */}
+              </>
+            ) : (
+              "Entrar"
+            )}
           </button>
         </form>
       </div>

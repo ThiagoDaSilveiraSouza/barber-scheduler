@@ -3,6 +3,7 @@ type MainModalProps = {
   isOpen: boolean; // Controla se o modal está aberto
   onClose: () => void; // Função para fechar o modal
   hasClose?: boolean; // Controla se o modal tem um botão de fechar
+  
 };
 
 export const MainModal = ({
@@ -16,7 +17,9 @@ export const MainModal = ({
   };
   return (
     <div
-      className={`fixed inset-0 flex justify-center items-center z-50 `}
+      className={`fixed inset-0 flex justify-center items-center z-50 ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none hidden"
+      }`}
       style={{ transition: "opacity 0.5s ease-in-out" }}
     >
       <div
