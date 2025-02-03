@@ -1,35 +1,44 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { slugfy } from "../../utils";
 import { useDataStore, useModals } from "../../store";
 import { BarbersProps } from "../../types";
-
-const fakeBarbers: BarbersProps[] = [
-  { id: "1", name: "João Silva", specialty: "Cortes clássicos" },
-  { id: "2", name: "Pedro Santos", specialty: "Cortes modernos" },
-  { id: "3", name: "Carlos Souza", specialty: "Barba e bigode" },
-];
+import { useFormsData } from "../../store/useFormsData";
+import { ConfirmModal } from "../../components";
 
 export const BarbersPage = () => {
-  const { data, setData } = useDataStore();
+  const { data, deleteData } = useDataStore();
   const { barbers } = data;
   const [filter, setFilter] = useState("");
   const { openModal } = useModals();
+  const { setFormsData } = useFormsData();
+  const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] =
+    useState(false);
+  const [selectedId, setSelectedId] = useState("");
+  const selectedBarber = barbers.find((barber) => barber.id === selectedId);
 
   const handleAddBarber = () => {
     openModal("AddBarberModal");
   };
 
-  const handleEditBarber = (id: string) => {
-    console.log("Editar barbeiro com ID:", id);
+  const handleEditBarber = async (data: BarbersProps) => {
+    setFormsData("editBarberForm", data);
+    openModal("AddBarberModal");
   };
 
   const handleDeleteBarber = (id: string) => {
-    const confirmed = confirm("Tem certeza que deseja excluir este barbeiro?");
-    const upatedData = barbers.filter((barber) => barber.id !== id);
-    if (confirmed) {
-      setData("barbers", upatedData);
-    }
+    setConfirmDeleteModalIsOpen(true);
+    setSelectedId(id);
+  };
+
+  const onConfirmDeleteModal = async () => {
+    deleteData("barbers", selectedId);
+    setSelectedId("");
+    setConfirmDeleteModalIsOpen(false);
+  };
+
+  const onCloseConfirmDeleteModal = () => {
+    setConfirmDeleteModalIsOpen(false);
   };
 
   const filteredBarbers = barbers.filter((barber) => {
@@ -37,10 +46,6 @@ export const BarbersPage = () => {
     const slugfyedFilter = slugfy(filter);
     return slugfyedBarberName.includes(slugfyedFilter);
   });
-
-  useEffect(() => {
-    setData("barbers", fakeBarbers);
-  }, [setData]);
 
   return (
     <div className="p-4 md:p-6">
@@ -87,7 +92,7 @@ export const BarbersPage = () => {
                     <div className="flex md:justify-start gap-2">
                       <button
                         className="flex justify-center align-center btn btn-outline btn-sm p-2"
-                        onClick={() => handleEditBarber(barber.id)}
+                        onClick={() => handleEditBarber(barber)}
                       >
                         <FaEdit />
                       </button>
@@ -110,6 +115,14 @@ export const BarbersPage = () => {
             )}
           </tbody>
         </table>
+        <ConfirmModal
+          description={`Deseja realmente excluir o barbeiro "${selectedBarber?.name}"?`}
+          isOpen={confirmDeleteModalIsOpen}
+          onClose={onCloseConfirmDeleteModal}
+          onCancel={onCloseConfirmDeleteModal}
+          onConfirm={onConfirmDeleteModal}
+          title="Excluir Barbeiro"
+        />
       </div>
     </div>
   );

@@ -42,5 +42,3 @@ export const useAuthStore = create<UseAuthStoreProps>((set, get) => ({
       ? set({ userData, isAuthenticated: true })
       : set({ isAuthenticated: false, userData: null }),
 }));
-
-useAuthStore.subscribe((state) => console.log(state));
