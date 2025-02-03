@@ -1,5 +1,42 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
+
+type LinkElementProps = {
+  isOpen: boolean;
+  to?: string;
+  children?: ReactNode;
+  onClick?: () => void;
+};
+
+const LinkElement = ({
+  isOpen,
+  to = "/",
+  children,
+  onClick,
+}: LinkElementProps) => {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`text-white hover:bg-gray-700 py-2 px-4 rounded-md transition-all duration-300 ${
+        isOpen ? "block" : "hidden"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+};
+
+const linkList = [
+  {
+    name: "Home",
+    to: "/",
+  },
+  {
+    name: "Barbeiros",
+    to: "/barbeiros",
+  },
+];
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,10 +52,10 @@ export const Sidebar = () => {
       }`}
     >
       {/* Cabeçalho com botão de alternar */}
-      <div className="flex justify-between items-center p-4 bg-gray-900">
+      <div className="flex justify-between items-center p-4 bg-gray-900 ">
         {/* Título que aparece/oculta dependendo da largura */}
         <h2
-          className={`text-xl font-bold transition-opacity duration-300 overflow-hidden min-w-100 ${
+          className={`text-xl font-bold transition-opacity duration-300 overflow-hidden min-w-100 w-64${
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none hidden"
           }`}
         >
@@ -33,23 +70,12 @@ export const Sidebar = () => {
       </div>
 
       {/* Links de navegação */}
-      <div className="flex flex-col space-y-4 p-4">
-        <Link
-          to="/"
-          className={`text-white hover:bg-gray-700 py-2 px-4 rounded-md transition-all duration-300 ${
-            isOpen ? "block" : "hidden"
-          }`}
-        >
-          Home
-        </Link>
-        <Link
-          to="/barbeiros"
-          className={`text-white hover:bg-gray-700 py-2 px-4 rounded-md transition-all duration-300 ${
-            isOpen ? "block" : "hidden"
-          }`}
-        >
-          Barbeiros
-        </Link>
+      <div className="flex flex-col space-y-4 p-4 w-64">
+        {linkList.map((link) => (
+          <LinkElement key={link.name} isOpen={isOpen} to={link.to} onClick={()=> setIsOpen(false)}>
+            {link.name}
+          </LinkElement>
+        ))}
       </div>
 
       {/* Botão de logout */}

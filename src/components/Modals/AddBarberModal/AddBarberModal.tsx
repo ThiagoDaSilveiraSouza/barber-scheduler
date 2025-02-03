@@ -3,9 +3,10 @@ import { useModals } from "../../../store/useModals";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDataStore } from "../../../store";
+import { useFormsData } from "../../../store/useFormsData";
 
-// Esquema Zod para validação
 const barberSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
   specialty: z.string().min(1, "A especialidade é obrigatória."),
@@ -13,37 +14,82 @@ const barberSchema = z.object({
 
 export const AddBarberModal = () => {
   const { modalsStates, closeModal } = useModals();
+  const { setData, updateData } = useDataStore();
   const [isLoading, setIsLoading] = useState(false);
+
+  const { formsData, resetFormsDataProps } = useFormsData();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<z.infer<typeof barberSchema>>({
     resolver: zodResolver(barberSchema),
   });
 
+  const addBarber = (data: z.infer<typeof barberSchema>) => {
+    const newId = crypto.randomUUID().toString();
+    const newBarber = {
+      id: newId,
+      ...data,
+    };
+    setData("barbers", newBarber);
+  };
+
+  const updatedBarber = (data: z.infer<typeof barberSchema>) => {
+    const updateBarberStore = formsData.editBarberForm;
+
+    if (!updateBarberStore) {
+      return;
+    }
+
+    updateData("barbers", updateBarberStore.id, {
+      name: data.name,
+      specialty: data.specialty,
+    });
+
+    resetFormsDataProps("editBarberForm");
+  };
+
   const onSubmit = async (data: z.infer<typeof barberSchema>) => {
     setIsLoading(true);
-    // Simulação de envio dos dados para API
-    try {
-      console.log("Dados do barbeiro:", data);
-      // Após o sucesso, fechar o modal
-      closeModal("AddBarberModal");
-    } catch (error) {
-      console.error("Erro ao adicionar barbeiro:", error);
+
+    const hasUpdatedBarberStore = formsData.editBarberForm;
+
+    if (hasUpdatedBarberStore) {
+      updatedBarber(data);
+    } else {
+      addBarber(data);
     }
+
+    reset();
     setIsLoading(false);
+    closeModal("AddBarberModal");
   };
+
+  const onCloseModal = () => {
+    reset(undefined);
+    resetFormsDataProps("editBarberForm");
+    closeModal("AddBarberModal");
+  };
+
+  useEffect(() => {
+    if (formsData.editBarberForm) {
+      reset(formsData.editBarberForm);
+    } else {
+      reset({ name: "", specialty: "" });
+    }
+  }, [modalsStates]);
 
   return (
     <MainModal
       isOpen={modalsStates.AddBarberModal}
-      onClose={() => closeModal("AddBarberModal")}
+      onClose={onCloseModal}
       hasClose={true}
     >
       <div className="flex flex-col space-y-4">
         <h2 className="text-xl font-semibold text-center">
-          Adicionar Barbeiro
+          {formsData.editBarberForm ? "Editar Barbeiro" : "Adicionar Barbeiro"}
         </h2>
 
         <form
