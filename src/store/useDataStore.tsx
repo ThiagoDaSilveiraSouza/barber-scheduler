@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import { BarbersProps } from "../types";
+import { ClientsProps } from "../types/ClientsProps";
 
 type defaultDataProps = {
   barbers: BarbersProps[];
+  clients: ClientsProps[];
 };
 
 type DataStoreProps = {
@@ -25,6 +27,7 @@ type DataStoreProps = {
 export const useDataStore = create<DataStoreProps>((set) => ({
   data: {
     barbers: [],
+    clients: [],
   },
   setData: (dataPropName, newData) =>
     set((state) => {
