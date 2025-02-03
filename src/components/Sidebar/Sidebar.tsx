@@ -36,6 +36,10 @@ const linkList = [
     name: "Barbeiros",
     to: "/barbeiros",
   },
+  {
+    name: "Clientes",
+    to: "/clientes",
+  },
 ];
 
 export const Sidebar = () => {

@@ -3,6 +3,7 @@ import { create } from "zustand";
 const defaultModalsStates = {
   authModal: true,
   AddBarberModal: false,
+  addClientModal: false,
 };
 
 type UseModalsProps = {
