@@ -1,9 +1,8 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import { Sidebar } from "../components";
+import { AddBarberModal, AddClientModal, Sidebar } from "../components";
 import { BarbersPage, ClientsPage, HomePage } from "../pages"; // exemplo de novas páginas
 import { useAuthStore } from "../store";
 import { AuthPage } from "../pages/AuthPage";
-import { AddBarberModal } from "../components/Modals/AddBarberModal";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuthStore();
@@ -22,6 +21,7 @@ export const AppRoutes = () => {
             </Routes>
           </div>
           <AddBarberModal />
+          <AddClientModal />
         </div>
       )}
     </BrowserRouter>
