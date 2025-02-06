@@ -8,6 +8,7 @@ type UseAuthStoreProps = {
   userData: z.infer<typeof authSchema> | null;
   initializeAuth: () => Promise<void>; // Função para inicializar a autenticação
   setIsAuthenticated: (userData?: z.infer<typeof authSchema>) => void;
+  logout: () => void;
 };
 
 export const useAuthStore = create<UseAuthStoreProps>((set, get) => ({
@@ -41,4 +42,9 @@ export const useAuthStore = create<UseAuthStoreProps>((set, get) => ({
     userData
       ? set({ userData, isAuthenticated: true })
       : set({ isAuthenticated: false, userData: null }),
+  logout: () => {
+    localStorage.removeItem("authToken");
+    set({ isAuthenticated: false, userData: null });
+    window.location.href = "/";
+  },
 }));

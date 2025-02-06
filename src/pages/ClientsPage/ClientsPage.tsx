@@ -1,51 +1,20 @@
-import { useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import { slugfy } from "../../utils";
-import { useDataStore, useModals } from "../../store";
-import { useFormsData } from "../../store/useFormsData";
 import { ConfirmModal } from "../../components";
-import { ClientsProps } from "../../types/ClientsProps";
+import { ClientsPageHook } from "./ClientsPageHook";
 
 export const ClientsPage = () => {
-  const { data, deleteData } = useDataStore();
-  const { clients } = data;
-  const [filter, setFilter] = useState("");
-  const { openModal } = useModals();
-  const { setFormsData } = useFormsData();
-  const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] =
-    useState(false);
-  const [selectedId, setSelectedId] = useState("");
-  const selectedClient = clients.find((client) => client.id === selectedId);
-
-  const handleAddClient = () => {
-    openModal("addClientModal");
-  };
-
-  const handleEditClient = async (data: ClientsProps) => {
-    setFormsData("editClientForm", data);
-    openModal("addClientModal");
-  };
-
-  const handleDeleteClient = (id: string) => {
-    setConfirmDeleteModalIsOpen(true);
-    setSelectedId(id);
-  };
-
-  const onConfirmDeleteModal = async () => {
-    deleteData("clients", selectedId);
-    setSelectedId("");
-    setConfirmDeleteModalIsOpen(false);
-  };
-
-  const onCloseConfirmDeleteModal = () => {
-    setConfirmDeleteModalIsOpen(false);
-  };
-
-  const filteredClients = clients.filter((client) => {
-    const slugfyedClientName = slugfy(client.name);
-    const slugfyedFilter = slugfy(filter);
-    return slugfyedClientName.includes(slugfyedFilter);
-  });
+  const {
+    filter,
+    filteredClients,
+    selectedClient,
+    confirmDeleteModalIsOpen,
+    handleAddClient,
+    handleEditClient,
+    handleDeleteClient,
+    onConfirmDeleteModal,
+    onCloseConfirmDeleteModal,
+    setFilter,
+  } = ClientsPageHook();
 
   return (
     <div className="p-4 md:p-6">

@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store";
 
 type LinkElementProps = {
   isOpen: boolean;
@@ -44,6 +45,7 @@ const linkList = [
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuthStore();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -76,7 +78,12 @@ export const Sidebar = () => {
       {/* Links de navegação */}
       <div className="flex flex-col space-y-4 p-4 w-64">
         {linkList.map((link) => (
-          <LinkElement key={link.name} isOpen={isOpen} to={link.to} onClick={()=> setIsOpen(false)}>
+          <LinkElement
+            key={link.name}
+            isOpen={isOpen}
+            to={link.to}
+            onClick={() => setIsOpen(false)}
+          >
             {link.name}
           </LinkElement>
         ))}
@@ -85,7 +92,7 @@ export const Sidebar = () => {
       {/* Botão de logout */}
       <div className="mt-auto p-4">
         <button
-          onClick={() => console.log("Logout")}
+          onClick={logout}
           className={`text-white bg-red-600 hover:bg-red-700 py-2 px-4 rounded-md transition-all duration-300 ${
             isOpen ? "block" : "hidden"
           }`}
