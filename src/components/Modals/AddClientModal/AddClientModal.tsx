@@ -6,12 +6,8 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
+import { clientSchema } from "../../../schemas";
 
-const clientSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
-  phone: z.string().min(1, "O telefone é obrigatório."),
-  email: z.string().email("O e-mail deve ser válido."),
-});
 
 export const AddClientModal = () => {
   const { modalsStates, closeModal } = useModals();

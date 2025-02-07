@@ -6,105 +6,93 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
-import { barberSchema } from "../../../schemas";
+import { serviceSchema } from "../../../schemas";
 
-export const AddBarberModal = () => {
+export const AddServiceModal = () => {
   const { modalsStates, closeModal } = useModals();
   const { setData, updateData } = useDataStore();
   const [isLoading, setIsLoading] = useState(false);
-
   const { formsData, resetFormsDataProps } = useFormsData();
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<z.infer<typeof barberSchema>>({
-    resolver: zodResolver(barberSchema),
+  } = useForm<z.infer<typeof serviceSchema>>({
+    resolver: zodResolver(serviceSchema),
   });
 
-  const addBarber = (data: z.infer<typeof barberSchema>) => {
+  const addService = (data: z.infer<typeof serviceSchema>) => {
     const newId = crypto.randomUUID().toString();
-    const newBarber = {
+    const newService = {
       id: newId,
       ...data,
     };
-    setData("barbers", newBarber);
+    setData("services", newService);
   };
 
-  const updatedBarber = (data: z.infer<typeof barberSchema>) => {
-    const updateBarberStore = formsData.editBarberForm;
+  const updateService = (data: z.infer<typeof serviceSchema>) => {
+    const updateServiceStore = formsData.editServiceForm;
+    if (!updateServiceStore) return;
 
-    if (!updateBarberStore) {
-      return;
-    }
-
-    updateData("barbers", updateBarberStore.id, {
+    updateData("services", updateServiceStore.id, {
       name: data.name,
-      specialty: data.specialty,
+      description: data.description,
+      price: data.price,
     });
-
-    resetFormsDataProps("editBarberForm");
+    resetFormsDataProps("editServiceForm");
   };
 
-  const onSubmit = async (data: z.infer<typeof barberSchema>) => {
+  const onSubmit = async (data: z.infer<typeof serviceSchema>) => {
     setIsLoading(true);
-
-    const hasUpdatedBarberStore = formsData.editBarberForm;
-
-    if (hasUpdatedBarberStore) {
-      updatedBarber(data);
-    } else {
-      addBarber(data);
-    }
-
+    const hasUpdatedServiceStore = formsData.editServiceForm;
+    hasUpdatedServiceStore ? updateService(data) : addService(data);
     reset();
     setIsLoading(false);
-    closeModal("AddBarberModal");
+    closeModal("addServiceModal");
   };
 
   const onCloseModal = () => {
     reset(undefined);
-    resetFormsDataProps("editBarberForm");
-    closeModal("AddBarberModal");
+    resetFormsDataProps("editServiceForm");
+    closeModal("addServiceModal");
   };
 
   useEffect(() => {
-    if (formsData.editBarberForm) {
-      reset(formsData.editBarberForm);
+    if (formsData.editServiceForm) {
+      reset(formsData.editServiceForm);
     } else {
-      reset({ name: "", specialty: "" });
+      reset({ name: "", description: "", price: 0 });
     }
   }, [modalsStates]);
 
   return (
     <MainModal
-      isOpen={modalsStates.AddBarberModal}
+      isOpen={modalsStates.addServiceModal}
       onClose={onCloseModal}
       hasClose={true}
     >
       <div className="flex flex-col space-y-4">
         <h2 className="text-xl font-semibold text-center">
-          {formsData.editBarberForm ? "Editar Barbeiro" : "Adicionar Barbeiro"}
+          {formsData.editServiceForm ? "Editar Serviço" : "Adicionar Serviço"}
         </h2>
 
         <form
           className="flex flex-col space-y-4"
           onSubmit={handleSubmit(onSubmit)}
         >
-          {/* Nome do Barbeiro */}
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Nome do Barbeiro
+              Nome do Serviço
             </label>
             <input
               id="name"
               type="text"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite o nome do barbeiro"
+              className="w-full p-2 border border-gray-300 rounded-md"
               {...register("name")}
             />
             {errors.name && (
@@ -112,27 +100,44 @@ export const AddBarberModal = () => {
             )}
           </div>
 
-          {/* Especialidade */}
           <div>
             <label
-              htmlFor="specialty"
+              htmlFor="description"
               className="block text-sm font-medium text-gray-700"
             >
-              Especialidade
+              Descrição
             </label>
-            <input
-              id="specialty"
-              type="text"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite a especialidade"
-              {...register("specialty")}
+            <textarea
+              id="description"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              {...register("description")}
             />
-            {errors.specialty && (
-              <p className="text-red-500 text-sm">{errors.specialty.message}</p>
+            {errors.description && (
+              <p className="text-red-500 text-sm">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
-          {/* Botão de Adicionar */}
+          <div>
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Preço
+            </label>
+            <input
+              id="price"
+              type="number"
+              step="0.01"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              {...register("price")}
+            />
+            {errors.price && (
+              <p className="text-red-500 text-sm">{errors.price.message}</p>
+            )}
+          </div>
+
           <button
             type="submit"
             className={`w-full py-2 px-4 mt-4 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 ${
@@ -140,14 +145,7 @@ export const AddBarberModal = () => {
             }`}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <>
-                Salvando...
-                {/* Adicione um spinner aqui, se necessário */}
-              </>
-            ) : (
-              "Adicionar"
-            )}
+            {isLoading ? "Salvando..." : "Adicionar"}
           </button>
         </form>
       </div>

@@ -4,6 +4,8 @@ const defaultModalsStates = {
   authModal: true,
   AddBarberModal: false,
   addClientModal: false,
+  addServiceModal: false,
+  AddScheduleModal: false,
 };
 
 type UseModalsProps = {

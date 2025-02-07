@@ -29,18 +29,10 @@ const LinkElement = ({
 };
 
 const linkList = [
-  {
-    name: "Home",
-    to: "/",
-  },
-  {
-    name: "Barbeiros",
-    to: "/barbeiros",
-  },
-  {
-    name: "Clientes",
-    to: "/clientes",
-  },
+  { name: "Home", to: "/" },
+  { name: "Barbeiros", to: "/barbeiros" },
+  { name: "Clientes", to: "/clientes" },
+  { name: "Serviços", to: "/servicos" },
 ];
 
 export const Sidebar = () => {
@@ -48,57 +40,69 @@ export const Sidebar = () => {
   const { logout } = useAuthStore();
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
   };
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-all duration-300 z-50 ${
+      className={`fixed top-0 left-0 h-full z-50 ${
         isOpen ? "w-64" : "w-16"
-      }`}
+      } overflow-hidden  transition-all duration-300`}
     >
-      {/* Cabeçalho com botão de alternar */}
-      <div className="flex justify-between items-center p-4 bg-gray-900 ">
-        {/* Título que aparece/oculta dependendo da largura */}
-        <h2
-          className={`text-xl font-bold transition-opacity duration-300 overflow-hidden min-w-100 w-64${
-            isOpen ? "opacity-100" : "opacity-0 pointer-events-none hidden"
-          }`}
-        >
-          Meu App
-        </h2>
-        <button
+      {/* Fundo escuro que fecha o menu ao clicar */}
+      {isOpen && (
+        <div
+          className="fixed w-full h-full left-0 top-0 bg-gray-800 opacity-30"
           onClick={toggleSidebar}
-          className="text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md  "
-        >
-          {isOpen ? "⮜" : "⮞"}
-        </button>
-      </div>
+        ></div>
+      )}
 
-      {/* Links de navegação */}
-      <div className="flex flex-col space-y-4 p-4 w-64">
-        {linkList.map((link) => (
-          <LinkElement
-            key={link.name}
-            isOpen={isOpen}
-            to={link.to}
-            onClick={() => setIsOpen(false)}
+      {/* Sidebar */}
+      <div
+        className={`absolute top-0 left-0 h-full bg-gray-800 text-white overflow-hidden`}
+      >
+        {/* Cabeçalho */}
+        <div className="flex justify-between items-center p-4 bg-gray-900 overflow-hidden min-w-64">
+          <h2
+            className={`text-xl font-bold transition-opacity duration-300  ${
+              isOpen ? "opacity-100" : "opacity-0 pointer-events-none hidden"
+            }`}
           >
-            {link.name}
-          </LinkElement>
-        ))}
-      </div>
+            Meu App
+          </h2>
+          <button
+            onClick={toggleSidebar}
+            className="text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md"
+          >
+            {isOpen ? "⮜" : "⮞"}
+          </button>
+        </div>
 
-      {/* Botão de logout */}
-      <div className="mt-auto p-4">
-        <button
-          onClick={logout}
-          className={`text-white bg-red-600 hover:bg-red-700 py-2 px-4 rounded-md transition-all duration-300 ${
-            isOpen ? "block" : "hidden"
-          }`}
-        >
-          Sair
-        </button>
+        {/* Links de navegação */}
+        <div className="flex flex-col space-y-4 p-4 min-w-64">
+          {linkList.map((link) => (
+            <LinkElement
+              key={link.name}
+              isOpen={isOpen}
+              to={link.to}
+              onClick={toggleSidebar}
+            >
+              {link.name}
+            </LinkElement>
+          ))}
+        </div>
+
+        {/* Botão de logout */}
+        <div className="mt-auto p-4">
+          <button
+            onClick={logout}
+            className={`text-white bg-red-600 hover:bg-red-700 py-2 px-4 rounded-md transition-all duration-300 ${
+              isOpen ? "block" : "hidden"
+            }`}
+          >
+            Sair
+          </button>
+        </div>
       </div>
     </div>
   );
