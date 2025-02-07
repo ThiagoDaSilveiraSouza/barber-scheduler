@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BarbersProps } from "../types";
+import { BarbersProps, ServicesProps } from "../types";
 import { ClientsProps } from "../types/ClientsProps";
 
 type UseFormsProps = {
@@ -16,6 +16,7 @@ type UseFormsProps = {
     };
     editBarberForm?: BarbersProps;
     editClientForm?: ClientsProps;
+    editServiceForm?: ServicesProps;
   };
   setFormsData: <T extends keyof UseFormsProps["formsData"]>(
     formName: T,

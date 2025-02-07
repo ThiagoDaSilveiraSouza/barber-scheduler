@@ -6,7 +6,7 @@ import { AuthServiceWithToken } from "../services";
 type UseAuthStoreProps = {
   isAuthenticated: boolean;
   userData: z.infer<typeof authSchema> | null;
-  initializeAuth: () => Promise<void>; // Função para inicializar a autenticação
+  initializeAuth: () => Promise<void>;
   setIsAuthenticated: (userData?: z.infer<typeof authSchema>) => void;
   logout: () => void;
 };
