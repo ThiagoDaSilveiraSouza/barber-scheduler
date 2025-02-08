@@ -30,6 +30,7 @@ const LinkElement = ({
 
 const linkList = [
   { name: "Home", to: "/" },
+  { name: "Agenda", to: "/agenda" },
   { name: "Barbeiros", to: "/barbeiros" },
   { name: "Clientes", to: "/clientes" },
   { name: "Serviços", to: "/servicos" },

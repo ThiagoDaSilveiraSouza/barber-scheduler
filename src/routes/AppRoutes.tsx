@@ -1,6 +1,17 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import { AddBarberModal, AddClientModal, AddServiceModal, Sidebar } from "../components";
-import { BarbersPage, ClientsPage, HomePage, ServicesPage } from "../pages"; // exemplo de novas páginas
+import {
+  AddBarberModal,
+  AddClientModal,
+  AddServiceModal,
+  Sidebar,
+} from "../components";
+import {
+  BarbersPage,
+  ClientsPage,
+  HomePage,
+  SchedulePage,
+  ServicesPage,
+} from "../pages"; // exemplo de novas páginas
 import { useAuthStore } from "../store";
 import { AuthPage } from "../pages/AuthPage";
 
@@ -19,6 +30,7 @@ export const AppRoutes = () => {
               <Route path="/barbeiros" element={<BarbersPage />} />
               <Route path="/clientes" element={<ClientsPage />} />
               <Route path="/servicos" element={<ServicesPage />} />
+              <Route path="/agenda" element={<SchedulePage />} />
             </Routes>
           </div>
           <AddBarberModal />
