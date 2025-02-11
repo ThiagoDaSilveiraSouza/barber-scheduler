@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BarbersProps, ServicesProps } from "../types";
+import { AppointmentsProps, BarbersProps, ServicesProps } from "../types";
 import { ClientsProps } from "../types/ClientsProps";
 
 type UseFormsProps = {
@@ -17,6 +17,7 @@ type UseFormsProps = {
     editBarberForm?: BarbersProps;
     editClientForm?: ClientsProps;
     editServiceForm?: ServicesProps;
+    editedAppointmentForm?: AppointmentsProps;
   };
   setFormsData: <T extends keyof UseFormsProps["formsData"]>(
     formName: T,
@@ -39,6 +40,7 @@ const defaultFormData: UseFormsProps["formsData"] = {
     confirmPassword: "",
   },
   editBarberForm: undefined,
+  editedAppointmentForm: undefined,
 };
 
 export const useFormsData = create<UseFormsProps>((set) => ({

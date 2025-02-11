@@ -6,6 +6,7 @@ const defaultModalsStates = {
   addClientModal: false,
   addServiceModal: false,
   AddScheduleModal: false,
+  AddAppointmentModal: false,
 };
 
 type UseModalsProps = {
