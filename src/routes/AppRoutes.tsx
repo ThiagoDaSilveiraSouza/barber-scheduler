@@ -1,5 +1,6 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import {
+  AddAppointmentModal,
   AddBarberModal,
   AddClientModal,
   AddServiceModal,
@@ -36,6 +37,7 @@ export const AppRoutes = () => {
           <AddBarberModal />
           <AddClientModal />
           <AddServiceModal />
+          <AddAppointmentModal />
         </div>
       )}
     </BrowserRouter>
