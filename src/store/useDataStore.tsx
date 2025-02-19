@@ -6,7 +6,7 @@ import {
   ServicesProps,
 } from "../types";
 import { ClientsProps } from "../types/ClientsProps";
-import { defaultAppointmentsMoc } from "../data";
+// import { defaultAppointmentsMoc } from "../data";
 
 type defaultDataProps = {
   barbers: BarbersProps[];
@@ -39,7 +39,7 @@ export const useDataStore = create<DataStoreProps>((set) => ({
     clients: [],
     services: [],
     schedule: [],
-    appointments: defaultAppointmentsMoc,
+    appointments: [],
   },
   setData: (dataPropName, newData) =>
     set((state) => {

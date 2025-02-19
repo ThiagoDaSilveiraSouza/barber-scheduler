@@ -10,7 +10,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div className={"bg-base-100 h-screen"}>
       <AppRoutes />
     </div>
   );
