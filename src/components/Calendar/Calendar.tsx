@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { AppointmentsProps } from "../../types";
 import { useDataStore, useModals } from "../../store";
+import { useFormsData } from "../../store/useFormsData";
 
 export const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const { formsData, setFormsData } = useFormsData();
   const { data } = useDataStore();
   const { openModal } = useModals();
 
@@ -69,19 +71,19 @@ export const Calendar = () => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
     );
-    setSelectedDate(null);
+    setFormsData("editedAppointmentForm", { date: undefined });
   };
 
   const nextMonth = () => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     );
-    setSelectedDate(null);
+    setFormsData("editedAppointmentForm", { date: undefined });
   };
 
   const goToToday = () => {
     setCurrentDate(new Date());
-    setSelectedDate(new Date());
+    setFormsData("editedAppointmentForm", { date: new Date() });
   };
 
   const handleDateClick = (day: number, isPrevMonth: boolean) => {
@@ -91,7 +93,7 @@ export const Calendar = () => {
       currentDate.getMonth(),
       day
     );
-    setSelectedDate(selected);
+    setFormsData("editedAppointmentForm", { date: selected });
 
     openModal("AddAppointmentModal");
   };
@@ -143,9 +145,11 @@ export const Calendar = () => {
 
           const isSelected =
             !isPrevMonth &&
-            selectedDate?.getFullYear() === currentDate.getFullYear() &&
-            selectedDate?.getMonth() === currentDate.getMonth() &&
-            selectedDate?.getDate() === day;
+            formsData.calendarSelectedDate?.getFullYear() ===
+              currentDate.getFullYear() &&
+            formsData.calendarSelectedDate?.getMonth() ===
+              currentDate.getMonth() &&
+            formsData.calendarSelectedDate?.getDate() === day;
 
           return (
             <div
@@ -165,9 +169,10 @@ export const Calendar = () => {
         <button className="btn btn-sm btn-primary" onClick={goToToday}>
           Hoje
         </button>
-        {selectedDate && (
+        {formsData.calendarSelectedDate && (
           <span className="text-sm">
-            Selecionado: {selectedDate.toLocaleDateString("pt-BR")}
+            Selecionado:{" "}
+            {formsData.calendarSelectedDate.toLocaleDateString("pt-BR")}
           </span>
         )}
       </div>

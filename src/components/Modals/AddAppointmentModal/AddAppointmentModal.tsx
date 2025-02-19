@@ -8,11 +8,13 @@ import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
 import { appointmentSchema } from "../../../schemas"; // Certifique-se de ter definido esse schema com Zod
 import { AppointmentsProps } from "../../../types";
+import { FiPlus } from "react-icons/fi";
 
 export const AddAppointmentModal = () => {
-  const { modalsStates, closeModal } = useModals();
+  const { modalsStates, closeModal, openModal } = useModals();
   const { setData, updateData } = useDataStore();
   const { formsData, resetFormsDataProps } = useFormsData();
+  const { data } = useDataStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -114,16 +116,28 @@ export const AddAppointmentModal = () => {
             >
               Nome do Cliente
             </label>
-            <input
-              id="customer"
-              type="text"
-              placeholder="Digite o nome do cliente"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register("clientId")}
-            />
-            {errors.clientId && (
-              <p className="text-red-500 text-sm">{errors.clientId.message}</p>
-            )}
+            <div className="flex items-center gap-2">
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register("clientId")}
+              >
+                <option value="" selected disabled></option>
+                {data.clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="p-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+                type="button"
+                onClick={() => {
+                  openModal("addClientModal");
+                }}
+              >
+                <FiPlus size={20} className="text-gray-600" />
+              </button>
+            </div>
           </div>
 
           {/* Nome do Barbeiro */}
@@ -134,13 +148,28 @@ export const AddAppointmentModal = () => {
             >
               Nome do Barbeiro
             </label>
-            <input
-              id="barber"
-              type="text"
-              placeholder="Digite o nome do barbeiro"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register("barberId")}
-            />
+            <div className="flex items-center gap-2">
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register("barberId")}
+              >
+                <option value="" selected disabled></option>
+                {data.barbers.map((barber) => (
+                  <option key={barber.id} value={barber.id}>
+                    {barber.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="p-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+                type="button"
+                onClick={() => {
+                  openModal("AddBarberModal");
+                }}
+              >
+                <FiPlus size={20} className="text-gray-600" />
+              </button>
+            </div>
             {errors.barberId && (
               <p className="text-red-500 text-sm">{errors.barberId.message}</p>
             )}
@@ -154,13 +183,25 @@ export const AddAppointmentModal = () => {
             >
               Serviço
             </label>
-            <input
-              id="service"
-              type="text"
-              placeholder="Digite o serviço"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register("servicesId")}
-            />
+            <div className="flex items-center gap-2">
+              <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" selected disabled></option>
+                {data.services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="p-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+                type="button"
+                onClick={() => {
+                  openModal("addServiceModal");
+                }}
+              >
+                <FiPlus size={20} className="text-gray-600" />
+              </button>
+            </div>
             {errors.servicesId && (
               <p className="text-red-500 text-sm">
                 {errors.servicesId.message}
