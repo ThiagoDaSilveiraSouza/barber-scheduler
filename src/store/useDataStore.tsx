@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  AppointmentsProps,
-  BarbersProps,
-  SchedulesProps,
-  ServicesProps,
-} from "../types";
+import { AppointmentsProps, BarbersProps, ServicesProps } from "../types";
 import { ClientsProps } from "../types/ClientsProps";
 // import { defaultAppointmentsMoc } from "../data";
 
@@ -12,7 +7,6 @@ type defaultDataProps = {
   barbers: BarbersProps[];
   clients: ClientsProps[];
   services: ServicesProps[];
-  schedule: SchedulesProps[];
   appointments: AppointmentsProps[];
 };
 

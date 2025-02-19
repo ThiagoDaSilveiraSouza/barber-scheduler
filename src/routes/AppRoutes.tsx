@@ -34,10 +34,10 @@ export const AppRoutes = () => {
               <Route path="/agenda" element={<SchedulePage />} />
             </Routes>
           </div>
+          <AddAppointmentModal />
           <AddBarberModal />
           <AddClientModal />
           <AddServiceModal />
-          <AddAppointmentModal />
         </div>
       )}
     </BrowserRouter>
