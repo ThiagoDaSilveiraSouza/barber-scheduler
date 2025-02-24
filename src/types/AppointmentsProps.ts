@@ -4,6 +4,6 @@ export type AppointmentsProps = {
   clientId: string;
   barberId: string;
   servicesId: string[];
-  date: Date;
+  date: string;
   status: "pending" | "completed" | "canceled";
 };

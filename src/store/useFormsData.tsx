@@ -18,7 +18,6 @@ type UseFormsProps = {
     editClientForm?: ClientsProps;
     editServiceForm?: ServicesProps;
     editedAppointmentForm?: AppointmentsProps;
-    calendarSelectedDate?: Date;
   };
   setFormsData: <T extends keyof UseFormsProps["formsData"]>(
     formName: T,
@@ -42,7 +41,6 @@ const defaultFormData: UseFormsProps["formsData"] = {
   },
   editBarberForm: undefined,
   editedAppointmentForm: undefined,
-  calendarSelectedDate: undefined,
 };
 
 export const useFormsData = create<UseFormsProps>((set) => ({

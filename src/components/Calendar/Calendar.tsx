@@ -1,25 +1,29 @@
 import { useState, useMemo } from "react";
 import { AppointmentsProps } from "../../types";
-import { useDataStore, useModals } from "../../store";
 import { useFormsData } from "../../store/useFormsData";
+import { transformDateToString } from "../../utils";
 
-export const Calendar = () => {
+type CalendarProps = {
+  appointments?: AppointmentsProps[];
+  dayHandlerClick?: (day: number, isPrevMonth: boolean) => void;
+  selectedDay?: Date;
+};
+
+export const Calendar = ({
+  appointments = [],
+  dayHandlerClick = () => {},
+  selectedDay = new Date(),
+}: CalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { formsData, setFormsData } = useFormsData();
-  const { data } = useDataStore();
-  const { openModal } = useModals();
 
   const appointmentsByDay = useMemo(() => {
-    return data.appointments.reduce((acc, appointment) => {
-      const dateStr = new Date(appointment.date).toISOString().split("T")[0];
-      if (!acc[dateStr]) {
-        acc[dateStr] = [];
-      }
-      acc[dateStr].push(appointment);
+    return appointments.reduce((acc, currentAppointment) => {
+      acc[currentAppointment.date] = acc[currentAppointment.date] || [];
+      acc[currentAppointment.date].push(currentAppointment);
       return acc;
     }, {} as { [key: string]: AppointmentsProps[] });
-  }, [data.appointments]);
+  }, [appointments]);
 
   const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   const monthNames = [
@@ -82,23 +86,12 @@ export const Calendar = () => {
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
-    setFormsData("editedAppointmentForm", { date: new Date() });
+    setFormsData("editedAppointmentForm", {
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
-  const handleDateClick = (day: number, isPrevMonth: boolean) => {
-    if (isPrevMonth) return;
-    const selected = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
-    setFormsData("editedAppointmentForm", { date: selected });
-
-    openModal("AddAppointmentModal");
-  };
-
-  const getDayColor = (day: number, isPrevMonth: boolean) => {
+  const getDayBorder = (day: number, isPrevMonth: boolean) => {
     if (isPrevMonth) return "bg-gray-300 text-gray-500 opacity-50";
     const targetDate = new Date(
       currentDate.getFullYear(),
@@ -109,9 +102,9 @@ export const Calendar = () => {
     const dateStr = targetDate.toISOString().split("T")[0];
     const appointmentCount = appointmentsByDay[dateStr]?.length || 0;
 
-    if (appointmentCount >= 10) return "bg-red-200";
-    if (appointmentCount >= 5) return "bg-yellow-200";
-    if (appointmentCount > 0) return "bg-green-200";
+    if (appointmentCount >= 10) return "border border-red-500";
+    if (appointmentCount >= 5) return "border border-yellow-500";
+    if (appointmentCount > 0) return "border border-green-500";
 
     return "";
   };
@@ -141,23 +134,20 @@ export const Calendar = () => {
       <div className="grid grid-cols-7 gap-1">
         {daysInMonth.map((day, index) => {
           const isPrevMonth = index < firstDayOfMonth.getDay();
-          const bgColor = getDayColor(day, isPrevMonth);
+          const dayBorder = getDayBorder(day, isPrevMonth);
+          const selectedDateString = transformDateToString(selectedDay);
+          const currentDateString = transformDateToString(currentDate);
 
-          const isSelected =
-            !isPrevMonth &&
-            formsData.calendarSelectedDate?.getFullYear() ===
-              currentDate.getFullYear() &&
-            formsData.calendarSelectedDate?.getMonth() ===
-              currentDate.getMonth() &&
-            formsData.calendarSelectedDate?.getDate() === day;
+          console.log("dayBorder", dayBorder);
+          const isSelected = selectedDateString === currentDateString;
 
           return (
             <div
               key={index}
-              className={`p-2 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white cursor-pointer ${
-                isSelected ? "bg-primary text-white" : bgColor
+              className={`p-2 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white cursor-pointer border-s-black ${
+                isSelected ?? "bg-primary text-white"
               } ${isPrevMonth ? "cursor-default" : "cursor-pointer"}`}
-              onClick={() => handleDateClick(day, isPrevMonth)}
+              onClick={() => dayHandlerClick(day, isPrevMonth)}
             >
               {day}
             </div>
@@ -169,10 +159,9 @@ export const Calendar = () => {
         <button className="btn btn-sm btn-primary" onClick={goToToday}>
           Hoje
         </button>
-        {formsData.calendarSelectedDate && (
+        {formsData.editedAppointmentForm?.date && (
           <span className="text-sm">
-            Selecionado:{" "}
-            {formsData.calendarSelectedDate.toLocaleDateString("pt-BR")}
+            Selecionado: {formsData.editedAppointmentForm?.date}
           </span>
         )}
       </div>

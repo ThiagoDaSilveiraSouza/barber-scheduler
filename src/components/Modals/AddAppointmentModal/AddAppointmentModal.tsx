@@ -3,7 +3,7 @@ import { useModals } from "../../../store/useModals";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
 import { appointmentSchema } from "../../../schemas"; // Certifique-se de ter definido esse schema com Zod
@@ -31,6 +31,7 @@ export const AddAppointmentModal = () => {
     const newAppointment: AppointmentsProps = {
       id: newId,
       ...data,
+      date: new Date(data.date).toISOString().split("T")[0],
     };
     setData("appointments", newAppointment);
   };
@@ -38,8 +39,12 @@ export const AddAppointmentModal = () => {
   const updateAppointment = (data: z.infer<typeof appointmentSchema>) => {
     const editData = formsData.editedAppointmentForm;
     if (!editData) return;
+    editData.date = new Date(data.date).toISOString().split("T")[0];
 
-    updateData("appointments", editData.id, data);
+    updateData("appointments", editData.id, {
+      ...data,
+      date: new Date(data.date).toISOString().split("T")[0],
+    });
     resetFormsDataProps("editedAppointmentForm");
   };
 
@@ -62,15 +67,6 @@ export const AddAppointmentModal = () => {
     resetFormsDataProps("editedAppointmentForm");
     closeModal("AddAppointmentModal");
   };
-
-  useEffect(() => {
-    if (formsData.editedAppointmentForm) {
-      reset(formsData.editedAppointmentForm);
-    } else {
-      // const today = new Date().toISOString().split("T")[0];
-      // reset({ date: today, customer: "", barber: "", service: "" });
-    }
-  }, [formsData.editedAppointmentForm, modalsStates]);
 
   return (
     <MainModal
@@ -121,7 +117,7 @@ export const AddAppointmentModal = () => {
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("clientId")}
               >
-                <option value="" selected disabled></option>
+                {/* <option value="" selected disabled></option> */}
                 {data.clients.map((client) => (
                   <option key={client.id} value={client.id}>
                     {client.name}
@@ -153,7 +149,7 @@ export const AddAppointmentModal = () => {
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("barberId")}
               >
-                <option value="" selected disabled></option>
+                {/* <option value="" selected disabled></option> */}
                 {data.barbers.map((barber) => (
                   <option key={barber.id} value={barber.id}>
                     {barber.name}
@@ -185,7 +181,7 @@ export const AddAppointmentModal = () => {
             </label>
             <div className="flex items-center gap-2">
               <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="" selected disabled></option>
+                {/* <option value="" selected disabled></option> */}
                 {data.services.map((service) => (
                   <option key={service.id} value={service.id}>
                     {service.name}
