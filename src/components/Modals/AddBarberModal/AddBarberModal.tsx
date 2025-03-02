@@ -30,6 +30,7 @@ export const AddBarberModal = () => {
       ...data,
     };
     setData("barbers", newBarber);
+    return newId;
   };
 
   const updatedBarber = (data: z.infer<typeof barberSchema>) => {
@@ -51,16 +52,25 @@ export const AddBarberModal = () => {
     setIsLoading(true);
 
     const hasUpdatedBarberStore = formsData.editBarberForm;
+    let newBarberId;
 
     if (hasUpdatedBarberStore) {
       updatedBarber(data);
     } else {
-      addBarber(data);
+      newBarberId = addBarber(data);
     }
 
     reset();
     setIsLoading(false);
     closeModal("AddBarberModal");
+    
+    // Se um novo barbeiro foi adicionado, atualiza o formulário de agendamento
+    if (newBarberId && formsData.editedAppointmentForm) {
+      formsData.editedAppointmentForm = {
+        ...formsData.editedAppointmentForm,
+        barberId: newBarberId
+      };
+    }
   };
 
   const onCloseModal = () => {

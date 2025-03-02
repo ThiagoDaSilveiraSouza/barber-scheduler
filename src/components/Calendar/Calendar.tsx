@@ -2,6 +2,8 @@ import { useState, useMemo } from "react";
 import { AppointmentsProps } from "../../types";
 import { useFormsData } from "../../store/useFormsData";
 import { transformDateToString } from "../../utils";
+import { useModals } from "../../store/useModals";
+import { AddScheduleModal } from "../Modals/AddScheduleModal/AddScheduleModal";
 
 type CalendarProps = {
   appointments?: AppointmentsProps[];
@@ -11,11 +13,22 @@ type CalendarProps = {
 
 export const Calendar = ({
   appointments = [],
-  dayHandlerClick = () => {},
   selectedDay = new Date(),
 }: CalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const { formsData, setFormsData } = useFormsData();
+  const { openModal } = useModals();
+  const [selectedDate, setSelectedDate] = useState<string>();
+
+  const handleDayClick = (day: number, isPrevMonth: boolean) => {
+    if (!isPrevMonth) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+      date.setUTCHours(0, 0, 0, 0);
+      const dateStr = date.toISOString().split('T')[0];
+      setSelectedDate(dateStr);
+      openModal("AddScheduleModal");
+    }
+  };
 
   const appointmentsByDay = useMemo(() => {
     return appointments.reduce((acc, currentAppointment) => {
@@ -102,9 +115,9 @@ export const Calendar = ({
     const dateStr = targetDate.toISOString().split("T")[0];
     const appointmentCount = appointmentsByDay[dateStr]?.length || 0;
 
-    if (appointmentCount >= 10) return "border border-red-500";
-    if (appointmentCount >= 5) return "border border-yellow-500";
-    if (appointmentCount > 0) return "border border-green-500";
+    if (appointmentCount >= 7) return "border-2 border-red-500";
+    if (appointmentCount >= 4) return "border-2 border-yellow-500";
+    if (appointmentCount > 0) return "border-2 border-green-500";
 
     return "";
   };
@@ -138,16 +151,15 @@ export const Calendar = ({
           const selectedDateString = transformDateToString(selectedDay);
           const currentDateString = transformDateToString(currentDate);
 
-          console.log("dayBorder", dayBorder);
           const isSelected = selectedDateString === currentDateString;
 
           return (
             <div
               key={index}
-              className={`p-2 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white cursor-pointer border-s-black ${
-                isSelected ?? "bg-primary text-white"
+              className={`p-2 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white cursor-pointer ${dayBorder} ${
+                isSelected ? "bg-primary text-white" : ""
               } ${isPrevMonth ? "cursor-default" : "cursor-pointer"}`}
-              onClick={() => dayHandlerClick(day, isPrevMonth)}
+              onClick={() => handleDayClick(day, isPrevMonth)}
             >
               {day}
             </div>
@@ -165,6 +177,9 @@ export const Calendar = ({
           </span>
         )}
       </div>
+
+      {/* Modal para visualizar e adicionar agendamentos */}
+      <AddScheduleModal selectedDate={selectedDate} />
     </div>
   );
 };

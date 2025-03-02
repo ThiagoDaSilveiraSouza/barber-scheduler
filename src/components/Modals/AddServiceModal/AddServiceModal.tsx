@@ -1,11 +1,11 @@
-import { MainModal } from "../../MainModal";
-import { useModals } from "../../../store/useModals";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useEffect, useState } from "react";
+import { useModals } from "../../../store/useModals";
 import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
+import { MainModal } from "../../MainModal";
 import { serviceSchema } from "../../../schemas";
 
 export const AddServiceModal = () => {
@@ -29,7 +29,11 @@ export const AddServiceModal = () => {
       id: newId,
       ...data,
     };
-    setData("services", newService);
+    setData("services", {
+      ...newService,
+      description: newService.description || "",
+    });
+    return newId;
   };
 
   const updateService = (data: z.infer<typeof serviceSchema>) => {
@@ -47,10 +51,26 @@ export const AddServiceModal = () => {
   const onSubmit = async (data: z.infer<typeof serviceSchema>) => {
     setIsLoading(true);
     const hasUpdatedServiceStore = formsData.editServiceForm;
-    hasUpdatedServiceStore ? updateService(data) : addService(data);
+    const newServiceId = hasUpdatedServiceStore ? undefined : addService(data);
+    if (hasUpdatedServiceStore) {
+      updateService(data);
+    }
     reset();
     setIsLoading(false);
     closeModal("addServiceModal");
+
+    if (newServiceId) {
+      const currentServices = formsData.editedAppointmentForm?.servicesId || [];
+      formsData.editedAppointmentForm = {
+        ...formsData.editedAppointmentForm,
+        servicesId: [...currentServices, newServiceId],
+        id: formsData.editedAppointmentForm?.id || "", // Ensure id is a string
+        clientId: formsData.editedAppointmentForm?.clientId || "", // Ensure clientId is a string
+        barberId: formsData.editedAppointmentForm?.barberId || "", // Ensure barberId is a string
+        date: formsData.editedAppointmentForm?.date || "", // Ensure date is a string
+        status: formsData.editedAppointmentForm?.status || "pending", // Ensure status is a valid string
+      };
+    }
   };
 
   const onCloseModal = () => {
@@ -128,10 +148,31 @@ export const AddServiceModal = () => {
             </label>
             <input
               id="price"
-              type="number"
-              step="0.01"
+              type="text"
               className="w-full p-2 border border-gray-300 rounded-md"
-              {...register("price")}
+              placeholder="R$ 0,00"
+              {...register("price", {
+                setValueAs: (value) => {
+                  if (typeof value === "string") {
+                    // Remove R$ and any non-numeric characters except decimal point
+                    const numericValue = value
+                      .replace(/[R$\s]/g, "")
+                      .replace(/\./g, "")
+                      .replace(/,/g, ".");
+                    return parseFloat(numericValue) || 0;
+                  }
+                  return value;
+                },
+              })}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, "");
+                const numericValue = parseInt(value) / 100;
+                const formactedValue = numericValue.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                });
+                e.target.value = formactedValue;
+              }}
             />
             {errors.price && (
               <p className="text-red-500 text-sm">{errors.price.message}</p>

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useDataStore } from "../../../store";
 import { useFormsData } from "../../../store/useFormsData";
 import { clientSchema } from "../../../schemas";
-
+import { formatPhoneNumber } from "../../../utils/masks";
 
 export const AddClientModal = () => {
   const { modalsStates, closeModal } = useModals();
@@ -31,6 +31,7 @@ export const AddClientModal = () => {
       ...data,
     };
     setData("clients", newClient);
+    return newId;
   };
 
   const updateClient = (data: z.infer<typeof clientSchema>) => {
@@ -53,16 +54,25 @@ export const AddClientModal = () => {
     setIsLoading(true);
 
     const hasUpdatedClientStore = formsData.editClientForm;
+    let newClientId;
 
     if (hasUpdatedClientStore) {
       updateClient(data);
     } else {
-      addClient(data);
+      newClientId = addClient(data);
     }
 
     reset();
     setIsLoading(false);
     closeModal("addClientModal");
+
+    // Se um novo cliente foi adicionado, atualiza o formulário de agendamento
+    if (newClientId && formsData.editedAppointmentForm) {
+      formsData.editedAppointmentForm = {
+        ...formsData.editedAppointmentForm,
+        clientId: newClientId,
+      };
+    }
   };
 
   const onCloseModal = () => {
@@ -126,8 +136,11 @@ export const AddClientModal = () => {
               id="phone"
               type="text"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite o telefone"
+              placeholder="(00) 00000-0000"
               {...register("phone")}
+              onChange={(e) => {
+                e.target.value = formatPhoneNumber(e.target.value);
+              }}
             />
             {errors.phone && (
               <p className="text-red-500 text-sm">{errors.phone.message}</p>

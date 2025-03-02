@@ -18,6 +18,7 @@ import { AuthPage } from "../pages/AuthPage";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuthStore();
+
   return (
     <BrowserRouter>
       {!isAuthenticated ? (
